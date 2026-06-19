@@ -64,6 +64,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+builder.Services.AddScoped<IVehicleManagementService,VehicleManagementService>();
+builder.Services.AddScoped<IVehicleBrandService,VehicleBrandService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

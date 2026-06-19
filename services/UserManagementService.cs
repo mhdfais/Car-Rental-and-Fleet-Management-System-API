@@ -53,8 +53,6 @@ public class UserManagementService(AppDbContext context) : IUserManagementServic
 
     public async Task<bool> UpdateStaff(Guid id, UpdateUserDto dto)
     {
-
-
         var user =await context.Users.FindAsync(id)
          ?? throw new KeyNotFoundException("provided user id is invalid or null");
 
