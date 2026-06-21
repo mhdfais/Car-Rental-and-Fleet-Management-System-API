@@ -31,13 +31,16 @@ namespace car_rental_and_fleet_management.middleware
             context.Response.StatusCode = ex switch
             {
                 ApplicationException => (int)HttpStatusCode.BadRequest,
+                KeyNotFoundException=>(int)HttpStatusCode.NotFound,
                 UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
                 _ => (int)HttpStatusCode.InternalServerError
             };
 
             var response = new
             {
-                message = ex.Message
+                statusCode = context.Response.StatusCode,
+                success="false",
+                error = ex.Message
             };
 
             var json = JsonSerializer.Serialize(response);

@@ -11,7 +11,7 @@ public class VehicleManagementService(AppDbContext context):IVehicleManagementSe
     {
         if(await context.Vehicles.AnyAsync(v=>v.NumberPlate==dto.NumberPlate))
         {
-            throw new InvalidOperationException("vehicle exist with this number plate");
+            throw new KeyNotFoundException("vehicle exist with this number plate");
         }
 
         var newVehicle = new Vehicle

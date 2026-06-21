@@ -40,25 +40,29 @@ builder.Services.AddAuthentication(options =>
     options.Events = new JwtBearerEvents
     {
         OnChallenge = async context =>
+    {
+        // 1. Terminate the default schema handling to prevent duplicate responses
+        context.HandleResponse();
+
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        context.Response.ContentType = "application/json";
+
+        // 2. Safely check if the failure context contains a known type string
+        var isExpired = context.AuthenticateFailure != null && 
+                        context.AuthenticateFailure.GetType().Name == "SecurityTokenExpiredException";
+
+        // 🧠 You can still use this variable if you want to include a message property later,
+        // but let's align the object schema to your exact requirements:
+        var responseMessage = isExpired ? "Token has expired" : "Token is missing or invalid";
+
+        // 3. Send a clean, unified response structure matching your contract
+        await context.Response.WriteAsJsonAsync(new
         {
-            // 1. Terminate the default schema handling to prevent duplicate responses
-            context.HandleResponse();
-
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.ContentType = "application/json";
-
-            // 2. Safely check if the failure context contains a known type string
-            var isExpired = context.AuthenticateFailure != null && 
-                            context.AuthenticateFailure.GetType().Name == "SecurityTokenExpiredException";
-
-            var responseMessage = isExpired ? "Token has expired" : "Token is missing or invalid";
-
-            // 3. Send a clean, unified response structure
-            await context.Response.WriteAsJsonAsync(new
-            {
-                message = responseMessage
-            });
-        }
+            statusCode = StatusCodes.Status401Unauthorized,
+            success = false,
+            error=responseMessage
+        });
+    }
     };
 });
 

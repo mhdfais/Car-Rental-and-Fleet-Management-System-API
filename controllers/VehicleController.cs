@@ -1,3 +1,4 @@
+using car_rental_and_fleet_management.common;
 using car_rental_and_fleet_management.DTOs;
 using car_rental_and_fleet_management.services;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,10 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     public async Task<IActionResult> CreateVehicleBrand([FromBody] VehicleBrandDto dto)
     {
         await vehicleBrandService.AddVehicleBrand(dto);
-        return Ok(new {message="vehicle brand created"});
+        return Created("",new ApiResponse<object>
+        {
+            Message="vehicle brand created successfully",
+        });
     }
 
     [HttpPut]
@@ -23,7 +27,10 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     public async Task<IActionResult> UpdateVehicleBrand(Guid id, [FromBody ]VehicleBrandDto dto)
     {
         await vehicleBrandService.UpdateVehicleBrand(id,dto);
-        return Ok(new {message="vehicle brand updated"});
+        return Ok(new ApiResponse<object>
+        {
+            Message="updated vehicle brand successfully",
+        });
     }
 
     [HttpGet]
@@ -31,7 +38,11 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     public async Task<IActionResult> GetVehicleBrands()
     {
         var brands= await vehicleBrandService.GetAllVehicleBrands();
-        return Ok(brands);
+        return Ok(new ApiResponse<object>
+        {
+            Message="vehicle brands retrieved successfully",
+            Data=brands
+        });
     }
 
     [HttpPost]
@@ -39,7 +50,10 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     public async Task<IActionResult> AddVehicle([FromBody] AddvehicleDto dto)
     {
         await vehicleService.AddVehicle(dto);
-        return Ok(new { message="vehicle created"});
+        return Created("",new ApiResponse<object>
+        {
+            Message="vehicle created successfully",
+        });
     }
 
     [HttpPut]
@@ -47,7 +61,10 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     public async Task<IActionResult> UpdateVehicle(Guid id, [FromBody] UpdateVehicleDto dto)
     {
         await vehicleService.UpdateVehicle(id,dto);
-        return Ok(new {message="vehicle updated"});
+         return Ok(new ApiResponse<object>
+        {
+            Message="vehicle updated successfully",
+        });
     }
 
     [HttpGet]
@@ -55,7 +72,11 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     public async Task<IActionResult> GetVehicles()
     {
         var Vehicles=await vehicleService.GetAllVehicles();
-        return Ok(Vehicles);
+        return Ok(new ApiResponse<object>
+        {
+            Message="vehicles retrieved successfully",
+            Data=Vehicles
+        });
     }
 
     [HttpGet]
@@ -63,7 +84,11 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     public async Task<IActionResult> GetVehicleById(Guid id)
     {
         var vehicle=await vehicleService.GetVehicleById(id);
-        return Ok(vehicle);
+        return Ok(new ApiResponse<object>
+        {
+            Message="vehicle retrieved successfully",
+            Data=vehicle
+        });
     }
 
 }
