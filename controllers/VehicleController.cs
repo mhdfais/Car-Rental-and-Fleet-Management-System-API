@@ -47,9 +47,9 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
 
     [HttpPost]
     [Route("vehicle")]
-    public async Task<IActionResult> AddVehicle([FromBody] AddvehicleDto dto)
+    public async Task<IActionResult> AddVehicle([FromForm] AddvehicleDto dto, IPhotoStorageService storageService)
     {
-        await vehicleService.AddVehicle(dto);
+        await vehicleService.AddVehicle(dto, storageService);
         return Created("",new ApiResponse<object>
         {
             Message="vehicle created successfully",

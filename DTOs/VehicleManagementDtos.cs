@@ -22,6 +22,8 @@ public class AddvehicleDto
 
     [Required]
     public Guid VehicleBrandId { get; set;}
+
+    public List<IFormFile> Images { get; set; } = [];
 }
 
 public class UpdateVehicleDto
@@ -58,4 +60,6 @@ public class VehicleResponseDto
     public string Make { get; set;}=string.Empty;
     public string Model { get; set;}=string.Empty;
     public string Type { get; set;}=string.Empty;
+
+    public List<string> ImageUrls { get; set; } = new();
 }
