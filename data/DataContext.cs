@@ -11,6 +11,7 @@ public class AppDbContext: DbContext
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<VehicleBrand> VehicleBrands { get; set; }
     public DbSet<VehicleImage> VehicleImages => Set<VehicleImage>();
+    public DbSet<Booking> Bookings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

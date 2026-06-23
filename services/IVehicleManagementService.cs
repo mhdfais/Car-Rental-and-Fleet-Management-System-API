@@ -8,4 +8,5 @@ public interface IVehicleManagementService
     Task UpdateVehicle(Guid id, UpdateVehicleDto dto);
     Task<List<VehicleResponseDto>> GetAllVehicles();
     Task<VehicleResponseDto> GetVehicleById(Guid id);
+    Task<IEnumerable<VehicleResponseDto>> GetAvailableVehicles(VehicleSearchQueryDto dto);
 }

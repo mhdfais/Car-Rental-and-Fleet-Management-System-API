@@ -1,5 +1,6 @@
 using car_rental_and_fleet_management.data;
 using car_rental_and_fleet_management.DTOs;
+using car_rental_and_fleet_management.enums;
 using car_rental_and_fleet_management.models;
 using Microsoft.EntityFrameworkCore;
 
@@ -85,6 +86,7 @@ public class VehicleManagementService(AppDbContext context):IVehicleManagementSe
            Make=v.VehicleBrand.Make,
            Model=v.VehicleBrand.Model,
            Type=v.VehicleBrand.Type,
+           ImageUrls=v.Images.Select(img=>img.Url).ToList(),
        }).ToListAsync();
     }
 
@@ -92,6 +94,7 @@ public class VehicleManagementService(AppDbContext context):IVehicleManagementSe
     {
         var vehicle = await context.Vehicles
         .Include(v => v.VehicleBrand) 
+        .Include(v=>v.Images)
         .FirstOrDefaultAsync(v => v.Id == id) 
         ?? throw new KeyNotFoundException("vehicle not found");
 
@@ -107,6 +110,61 @@ public class VehicleManagementService(AppDbContext context):IVehicleManagementSe
             Make=vehicle.VehicleBrand.Make,
             Model=vehicle.VehicleBrand.Model,
             Type=vehicle.VehicleBrand.Type,
+            ImageUrls=vehicle.Images.Select(img=>img.Url).ToList()
         };
+    }
+
+    public async Task<IEnumerable<VehicleResponseDto>> GetAvailableVehicles(VehicleSearchQueryDto dto)
+    {
+        var queryable=context.Vehicles
+        .Include(v=>v.Images)
+        .Include(v=>v.VehicleBrand)
+        .Where(v=>v.Status==VehicleStatus.Available)
+        .AsQueryable();
+
+        // Text Matching
+        if (!string.IsNullOrWhiteSpace(dto.SearchTerm))
+        {
+            var cleanTerm=dto.SearchTerm.Trim().ToLower();
+            queryable=queryable.Where(v=>v.VehicleBrand.Make.ToLower().Contains(cleanTerm) || v.VehicleBrand.Model.ToLower().Contains(cleanTerm));
+        }
+
+        // Budget Cap
+        if(dto.MaxDailyRate.HasValue && dto.MaxDailyRate.Value > 0)
+        {
+            queryable=queryable.Where(v=>v.DailyRate <= dto.MaxDailyRate.Value);
+        }
+
+        // Availability Checks
+        // if (dto.StartDate.HasValue && dto.EndDate.HasValue && dto.EndDate > dto.StartDate)
+        // {
+        //     var start = dto.StartDate.Value;
+        //     var end = dto.EndDate.Value;
+
+        //     var bookedVehicleIds = context.Bookings
+        //         .Where(b => b.Status != BookingStatus.Cancelled &&
+        //             start < b.ScheduledEndDate &&
+        //             end > b.ScheduledStartDate)
+        //         .Select(b => b.VehicleId);
+
+        //     queryable = queryable.Where(v => !bookedVehicleIds.Contains(v.Id));
+        // }
+
+        var vehicles = await queryable.AsNoTracking().OrderBy(v => v.DailyRate).ToListAsync();
+        
+        return vehicles.Select(v=>new VehicleResponseDto
+        {
+            Id=v.Id,
+            NumberPlate=v.NumberPlate,
+            Year=v.Year,
+            Odometer=v.Odometer,
+            DailyRate=v.DailyRate,
+            Status=v.Status,
+            CreatedAt=v.CreatedAt,
+            Make=v.VehicleBrand.Make,
+            Model=v.VehicleBrand.Model,
+            Type=v.VehicleBrand.Type,
+            ImageUrls=v.Images.Select(img=>img.Url).ToList(),
+        });
     }
 }

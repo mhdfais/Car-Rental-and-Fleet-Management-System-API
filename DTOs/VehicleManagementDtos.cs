@@ -23,6 +23,7 @@ public class AddvehicleDto
     [Required]
     public Guid VehicleBrandId { get; set;}
 
+    [Required]
     public List<IFormFile> Images { get; set; } = [];
 }
 
@@ -62,4 +63,12 @@ public class VehicleResponseDto
     public string Type { get; set;}=string.Empty;
 
     public List<string> ImageUrls { get; set; } = new();
+}
+
+public class VehicleSearchQueryDto
+{
+    public string? SearchTerm { get; set;}=string.Empty;
+    public decimal? MaxDailyRate { get; set;}
+    public DateTime? StartDate { get; set;}
+    public DateTime? EndDate { get; set;}
 }

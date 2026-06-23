@@ -8,11 +8,11 @@ namespace car_rental_and_fleet_management.controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/admin")]
+[Route("api/vehicles")]
 public class VehicleController(IVehicleManagementService vehicleService, IVehicleBrandService vehicleBrandService) : ControllerBase
 {
     [HttpPost]
-    [Route("vehicleBrand")]
+    [Route("vehicleBrands")]
     public async Task<IActionResult> CreateVehicleBrand([FromBody] VehicleBrandDto dto)
     {
         await vehicleBrandService.AddVehicleBrand(dto);
@@ -23,7 +23,7 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     }
 
     [HttpPut]
-    [Route("vehicleBrand/{id}")]
+    [Route("vehicleBrands/{id}")]
     public async Task<IActionResult> UpdateVehicleBrand(Guid id, [FromBody ]VehicleBrandDto dto)
     {
         await vehicleBrandService.UpdateVehicleBrand(id,dto);
@@ -34,7 +34,7 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     }
 
     [HttpGet]
-    [Route("vehicleBrand")]
+    [Route("vehicleBrands")]
     public async Task<IActionResult> GetVehicleBrands()
     {
         var brands= await vehicleBrandService.GetAllVehicleBrands();
@@ -46,7 +46,7 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     }
 
     [HttpPost]
-    [Route("vehicle")]
+    [Route("vehicles")]
     public async Task<IActionResult> AddVehicle([FromForm] AddvehicleDto dto, IPhotoStorageService storageService)
     {
         await vehicleService.AddVehicle(dto, storageService);
@@ -57,7 +57,7 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     }
 
     [HttpPut]
-    [Route("vehicle/{id}")]
+    [Route("{id}")]
     public async Task<IActionResult> UpdateVehicle(Guid id, [FromBody] UpdateVehicleDto dto)
     {
         await vehicleService.UpdateVehicle(id,dto);
@@ -68,7 +68,6 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     }
 
     [HttpGet]
-    [Route("vehicle")]
     public async Task<IActionResult> GetVehicles()
     {
         var Vehicles=await vehicleService.GetAllVehicles();
@@ -80,7 +79,7 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
     }
 
     [HttpGet]
-    [Route("vehicle/{id}")]
+    [Route("{id}")]
     public async Task<IActionResult> GetVehicleById(Guid id)
     {
         var vehicle=await vehicleService.GetVehicleById(id);
@@ -88,6 +87,18 @@ public class VehicleController(IVehicleManagementService vehicleService, IVehicl
         {
             Message="vehicle retrieved successfully",
             Data=vehicle
+        });
+    }
+
+    [HttpGet]
+    [Route("available")]
+    public async Task<IActionResult> GetAvailableVehicles([FromQuery] VehicleSearchQueryDto dto)
+    {
+        var vehicles=await vehicleService.GetAvailableVehicles(dto);
+        return Ok(new ApiResponse<object>
+        {
+            Message="Vehicles retrieved successfully",
+            Data=vehicles
         });
     }
 
